@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from gwpy.timeseries import TimeSeries
 
 
-def get_data(start_time, end_time, plot_data=False):
+def get_data(start_time, end_time, make_plots=False):
     
     # fetch data and times
     time_seriesH1 = TimeSeries.fetch_open_data('H1', start_time, end_time, sample_rate=4096)
@@ -18,7 +18,7 @@ def get_data(start_time, end_time, plot_data=False):
     np.savetxt('data_L1.txt', data_L1)
 
     # plot data
-    if plot_data:
+    if make_plots:
         plt.plot(times, data_H1, label='Hanford')
         plt.plot(times, data_L1, label='Livingston')
         plt.legend(loc='upper right')
@@ -27,8 +27,10 @@ def get_data(start_time, end_time, plot_data=False):
     return
 
 
-t0 = 1126259446
-t1 = 1126259478
-get_data(t0, t1, plot_data=True)
+# t0 = 1126259446
+# t1 = 1126259478
+t0 = 1267963031
+t1 = 1267963091
+get_data(t0, t1, make_plots=True)
         
 
