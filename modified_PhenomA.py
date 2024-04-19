@@ -13,22 +13,31 @@ def mass_transform(component_masses):
 
 
 # modify PhenomA methods so they take component masses as input
+# get amplitude of signal in frequency-domain
 def get_amp(fs, comp_masses):
     M, eta = mass_transform(comp_masses)
-    return Aeff(fs, M, eta, DL)
+    return Aeff(fs, M, eta, Dl=DL)
 
-def get_phase(fs, comp_masses, t0, phi0):
+# get phase of signal in frequency-domain
+def get_phase(fs, comp_masses):
     M, eta = mass_transform(comp_masses)
-    return Psieff(fs, M, eta, t0, phi0)
+    return Psieff(fs, M, eta, t0=t0, phi0=phi0)
 
-def get_phase_deriv(fs, comp_masses, t0):
+# get derivative of phase with respect to frequency
+def get_phase_deriv(fs, comp_masses):
     M, eta = mass_transform(comp_masses)
-    return dPsieff_df(fs, M, eta, t0)
+    return dPsieff_df(fs, M, eta, t0=t0)
+
+
+# get frequency-domain waveform
+def get_waveform_freq(fs, comp_masses):
+    return get_amp(fs, comp_masses) * np.exp(1.j * get_phase(fs, comp_masses))
 
 
 # plot waveform at measured parameters
 fs = np.linspace(20, 1000, 1000)
-amps = get_amp(fs, [m1_measured, m2_measured])
+amps = get_amp(fs, ms_measured)
 print(amps)
 plt.loglog(fs, amps)
 plt.show()
+
