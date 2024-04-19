@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from gwpy.timeseries import TimeSeries
+from constants import *
 
 
 def get_data(start_time, end_time, make_plots=False):
@@ -27,10 +28,6 @@ def get_data(start_time, end_time, make_plots=False):
     return
 
 
-# t0 = 1126259446
-# t1 = 1126259478
-t0 = 1267963031
-t1 = 1267963091
-get_data(t0, t1, make_plots=True)
+get_data(GPS_start-60, GPS_start, make_plots=True)
         
 

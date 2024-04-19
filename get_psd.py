@@ -42,10 +42,11 @@ def get_psd(times, data_H1, data_L1, make_plots=False):
     return [psd_H1, psd_L1]
 
 
+
 # load data
 times = np.loadtxt('times.txt')
 data_H1 = np.loadtxt('data_H1.txt')
 data_L1 = np.loadtxt('data_L1.txt')
 
-
+# get psd
 get_psd(times, data_H1, data_L1, make_plots=True)
