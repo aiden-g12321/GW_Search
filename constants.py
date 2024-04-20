@@ -14,7 +14,6 @@ PC_SI = 3.085677581491367278913937957796471611e16  # parsec, m
 
 
 # measured parameters
-# luminosity distance, time and phase
 m1_measured = 34.2  # solar masses
 m2_measured = 27.7  # solar masses
 m1_measured_sec = m1_measured * MTSUN_SI
