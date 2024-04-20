@@ -7,3 +7,4 @@ GPS_start = 1267963091
 m1_measured = 34.2  # solar masses
 m2_measured = 27.7  # solar masses
 ms_measured = [m1_measured, m2_measured]
+num_params = 5

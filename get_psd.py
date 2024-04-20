@@ -49,4 +49,4 @@ data_H1 = np.loadtxt('data_H1.txt')
 data_L1 = np.loadtxt('data_L1.txt')
 
 # get psd
-get_psd(times, data_H1, data_L1, make_plots=True)
+get_psd(times, data_H1, data_L1)
