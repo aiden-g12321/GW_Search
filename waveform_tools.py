@@ -44,7 +44,7 @@ def inner(a, b, Ss, df):
     return inner_prod
 
 
-step_sizes = [1.e-5, 1.e-5, 1.e-5, 1.e-5, 1.e-5]
+step_sizes = [1.e-4, 1.e-4, 1.e-5, 1.e-5, 1.e-5]
 # calculate partial derivative of frequency-domain waveform
 def partial_waveform(freqs, params, index):
     dstep = np.zeros(num_params)
@@ -67,14 +67,17 @@ def match(params1, params2, freqs, Ss, df):
 # get components of metric on template space
 def metric(freqs, params, Ss, df):
     waveform = get_waveform_freq(freqs, params)
+    normalization = 1 / np.sqrt(inner(waveform, waveform, Ss, df))
+    norm_waveform = normalization * waveform
     partials = [partial_waveform(freqs, params, i) for i in range(num_params)]
-    SNRsq = inner(waveform, waveform, Ss, df)
+    norm_partials = normalization * np.array(partials)
+    SNRsq = inner(norm_waveform, norm_waveform, Ss, df)
     SNR = np.sqrt(SNRsq)
     metric_comp = np.zeros((num_params, num_params))
     for i in range(num_params):
         for j in range(i, num_params):
-            first_term = inner(partials[i], partials[j], Ss, df) / SNR
-            second_term = inner(waveform, partials[i], Ss, df) * inner(waveform, partials[j], Ss, df) / SNRsq
+            first_term = inner(norm_partials[i], norm_partials[j], Ss, df) / SNR
+            second_term = inner(norm_waveform, norm_partials[i], Ss, df) * inner(norm_waveform, norm_partials[j], Ss, df) / SNRsq
             metric_comp[i,j] = metric_comp[j,i] = first_term - second_term
     return metric_comp
 
@@ -90,17 +93,16 @@ def projected_metric(freqs, params, Ss, df):
     for i in range(num_params):
         for j in range(i, num_params):
             second_proj[i,j] = second_proj[j,i] = first_proj[i,j] - first_proj[i,3]*first_proj[j,3]/first_proj[3,3]
-    return second_proj[:2,:2]
+    return second_proj
 
 
 # compute mismatch between waveforms
-def mismatch(freqs, params1, params2, Ss, df):
+def get_mismatch(proj_metric, params1, params2):
     delta = np.array(params2) - np.array(params1)
-    metric_proj = projected_metric(freqs, params1, Ss, df)
     mismatch = 0
     for i in range(2):
         for j in range(2):
-            mismatch += (1/2) * metric_proj[i,j] * delta[i] * delta[j]
+            mismatch += (1/2) * proj_metric[i,j] * delta[i] * delta[j]
     return mismatch
 
 
@@ -113,14 +115,16 @@ data_H1 = np.loadtxt('data/data_H1.txt')
 data_L1 = np.loadtxt('data/data_L1.txt')
 
 # define frequency bins
-fs = np.linspace(20, 2048, 2**9 + 1)
+fs = np.linspace(20, 1024, 2**12+1)
 df = fs[1] - fs[0]
 psd = joint_psd(times, data_H1, data_L1, fs)
 
 # define parameters
 params = [m1_measured_sec, m2_measured_sec, 0., 0., 100*1.e6*PC_SI/CLIGHT]
+params_offset = [m1_measured_sec + 2.e-7, m2_measured_sec - 2.e-7, 0., 0., 100*1.e6*PC_SI/CLIGHT]
 
 # compute metric components before and after projections
 metric_comp = metric(fs, params, psd, df)
 metric_comp_proj = projected_metric(fs, params, psd, df)
+
 
