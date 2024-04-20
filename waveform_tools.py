@@ -44,7 +44,7 @@ def inner(a, b, Ss, df):
     return inner_prod
 
 
-step_sizes = [1.e-4, 1.e-4, 1.e-5, 1.e-5, 1.e-5]
+step_sizes = [1.e-7, 1.e-7, 1.e-5, 1.e-5, 1.e-5]
 # calculate partial derivative of frequency-domain waveform
 def partial_waveform(freqs, params, index):
     dstep = np.zeros(num_params)
@@ -106,8 +106,19 @@ def get_mismatch(proj_metric, params1, params2):
     return mismatch
 
 
+# input: parameter list in seconds or [m1, m2] in seconds
+# returns: [m1, m2] in solar masses
+def convert_solar(params):
+    params = np.array(params)
+    return params[:2] / MTSUN_SI
 
 
+
+
+
+########################################################
+########### STORE OBJECTS FOR TESTING ##################
+########################################################
 
 # load data
 times = np.loadtxt('data/times.txt')
@@ -126,5 +137,4 @@ params_offset = [m1_measured_sec + 2.e-7, m2_measured_sec - 2.e-7, 0., 0., 100*1
 # compute metric components before and after projections
 metric_comp = metric(fs, params, psd, df)
 metric_comp_proj = projected_metric(fs, params, psd, df)
-
 
