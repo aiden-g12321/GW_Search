@@ -1,3 +1,7 @@
+'''Script courtesy of Neil Cornish 
+original: https://github.com/eXtremeGravityInstitute/LISA_Sensitivity/blob/master/PhenomA.py'''
+
+
 import numpy as np
 
 TSUN = 4.9169e-6
