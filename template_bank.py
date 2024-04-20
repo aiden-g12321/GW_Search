@@ -14,6 +14,7 @@ def get_axes_angle(freqs, params, Ss, df):
     metric_proj = projected_metric(freqs, params, Ss, df)
     value, vector = np.linalg.eig(metric_proj)
     
+    
     # machine precision sometimes generates (small) nonzero luminosity distance components of metric
     # to avoid runaways, set distance component of eigenvectors to 0.
     vector[4,:] = 0.
@@ -35,34 +36,69 @@ def get_axes_angle(freqs, params, Ss, df):
     semi_major = semi_major_sec / MTSUN_SI  # solar masses
     semi_minor = semi_minor_sec / MTSUN_SI  # solar masses
     
-    # NEEDS FIXING!!!
-    # get angle orientation (in degrees)
-    angle = np.arctan(vector[1,0] / vector[0,0]) * 180. / np.pi
-    if angle > 0:  # angle sometimes 90degree off... WHY???
-        angle -= 90.
+    # get eigenvector oriented in +m1 and +m2 direction
+    if np.sign(vector[0,0]) == np.sign(vector[1,0]):
+        eigen_vec = vector[:,0]
+    else:
+        eigen_vec = vector[:,1]
+        
+    # get angle (in degrees) of ellipse
+    angle = np.arctan2(-eigen_vec[1], eigen_vec[0]) * 180. / np.pi
     
     return [semi_major, semi_minor, angle]
 
 
+# get template bank, templates lie along m2 = m1 - 2*Msun line
+# spacing determined so templates 0.05 mis-match from each other
+def get_template_bank(freqs, Ss, df, make_plots=False):
+    m1 = 25. * MTSUN_SI # start off at 25 solar masses
+    m2 = m1 - 2. * MTSUN_SI
+    params = np.array([m1, m2, 0., 0., 100.*1.e6*PC_SI/CLIGHT])
+    # initialize arrays for bank
+    paramss = [params]
+    metrics = [projected_metric(freqs, params, Ss, df)]
+    semi_major, semi_minor, angle = get_axes_angle(freqs, params, Ss, df)
+    majors = [semi_major]
+    minors = [semi_minor]
+    angles = [angle]
+    count = 0
+    while params[0] / MTSUN_SI < 50.:  # add to bank until m1 > 50*Msun
+        # move along m2 = m1 - 2*Msun line
+        shift = minors[count]*MTSUN_SI / np.sqrt(2)
+        params = paramss[count] + np.array([shift, shift, 0., 0., 0.])
+        paramss.append(params)
+        metrics.append(projected_metric(freqs, params, Ss, df))
+        semi_major, semi_minor, angle = get_axes_angle(freqs, params, Ss, df)
+        majors.append(semi_major)
+        minors.append(semi_minor)
+        angles.append(angle)
+        count += 1
+    
+    # plot coverage of template bank
+    if make_plots:
+        a = plt.subplot(aspect='equal')
+        for i in range(count):
+            m1sol, m2sol = convert_solar(paramss[i])
+            # scale width of ellipse by factor for clearer viewing
+            factor = 3.
+            e = Ellipse((m1sol, m2sol), 2.*majors[i], 2.*minors[i] / factor, 
+                        angle=angles[i], color='purple', alpha=0.6)
+            a.add_artist(e)
+            plt.scatter(m1sol, m2sol, color='green')
+        plt.xlabel(r'$m_1\;\;(M_\odot)$')
+        plt.ylabel(r'$m_2\;\;(M_\odot)$')
+        plt.xlim(25, 50)
+        plt.ylim(25, 50)
+        plt.show()
+    
+    return [np.array(paramss), np.array(metrics)]
 
 
-# plot coverage of template bank
-num_pts = 10
-m1s_sec = np.linspace(25.*MTSUN_SI, 50.*MTSUN_SI, num_pts)
-m2s_sec = np.array([m1 - 2.*MTSUN_SI for m1 in m1s_sec])
-for i in range(num_pts):
-    params =[m1s_sec[i], m2s_sec[i], 0., 0., 100.*1.e6*PC_SI/CLIGHT]
-    semi_major, semi_minor, angle = get_axes_angle(fs, params, psd, df)
-    m1sol, m2sol = convert_solar(params)
-    e = Ellipse((m1sol, m2sol), 2*semi_major, 2*semi_minor, angle=angle, color='purple', alpha=0.6)
-    a = plt.subplot()
-    a.add_artist(e)
-    plt.scatter(m1sol, m2sol, color='green')
-plt.xlabel(r'$m_1\;\;(M_\odot)$')
-plt.ylabel(r'$m_2\;\;(M_\odot)$')
-plt.xlim(25, 50)
-plt.ylim(25, 50)
-plt.show()
+
+
+paramss, metrics = get_template_bank(fs, psd, df, make_plots=True)
+print(np.shape(paramss))
+print(np.shape(metrics))
 
 
 

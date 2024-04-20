@@ -44,7 +44,7 @@ def inner(a, b, Ss, df):
     return inner_prod
 
 
-step_sizes = [1.e-7, 1.e-7, 1.e-5, 1.e-5, 1.e-5]
+step_sizes = [1.e-10, 1.e-10, 1.e-5, 1.e-5, 1.e-5]
 # calculate partial derivative of frequency-domain waveform
 def partial_waveform(freqs, params, index):
     dstep = np.zeros(num_params)
@@ -137,4 +137,5 @@ params_offset = [m1_measured_sec + 2.e-7, m2_measured_sec - 2.e-7, 0., 0., 100*1
 # compute metric components before and after projections
 metric_comp = metric(fs, params, psd, df)
 metric_comp_proj = projected_metric(fs, params, psd, df)
+
 
