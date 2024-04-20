@@ -35,10 +35,11 @@ def get_axes_angle(freqs, params, Ss, df):
     semi_major = semi_major_sec / MTSUN_SI  # solar masses
     semi_minor = semi_minor_sec / MTSUN_SI  # solar masses
     
+    # NEEDS FIXING!!!
     # get angle orientation (in degrees)
-    min_component = min(vector[:,0])
-    max_component = max(vector[:,0])
-    angle = np.arctan(min_component / max_component) * 180. / np.pi
+    angle = np.arctan(vector[1,0] / vector[0,0]) * 180. / np.pi
+    if angle > 0:  # angle sometimes 90degree off... WHY???
+        angle -= 90.
     
     return [semi_major, semi_minor, angle]
 
