@@ -93,7 +93,6 @@ def projected_metric(freqs, params, Ss, df):
     return second_proj[:2,:2]
 
 
-
 # compute mismatch between waveforms
 def mismatch(freqs, params1, params2, Ss, df):
     delta = np.array(params2) - np.array(params1)
@@ -109,9 +108,9 @@ def mismatch(freqs, params1, params2, Ss, df):
 
 
 # load data
-times = np.loadtxt('times.txt')
-data_H1 = np.loadtxt('data_H1.txt')
-data_L1 = np.loadtxt('data_L1.txt')
+times = np.loadtxt('data/times.txt')
+data_H1 = np.loadtxt('data/data_H1.txt')
+data_L1 = np.loadtxt('data/data_L1.txt')
 
 # define frequency bins
 fs = np.linspace(20, 2048, 2**9 + 1)
@@ -121,6 +120,7 @@ psd = joint_psd(times, data_H1, data_L1, fs)
 # define parameters
 params = [m1_measured_sec, m2_measured_sec, 0., 0., 100*1.e6*PC_SI/CLIGHT]
 
+# compute metric components before and after projections
 metric_comp = metric(fs, params, psd, df)
 metric_comp_proj = projected_metric(fs, params, psd, df)
 

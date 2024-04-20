@@ -14,9 +14,9 @@ def get_data(start_time, end_time, make_plots=False):
     times = np.array(time_seriesH1.times)
 
     # save data to .txt file
-    np.savetxt('times.txt', times)
-    np.savetxt('data_H1.txt', data_H1)
-    np.savetxt('data_L1.txt', data_L1)
+    np.savetxt('data/times.txt', times)
+    np.savetxt('data/data_H1.txt', data_H1)
+    np.savetxt('data/data_L1.txt', data_L1)
 
     # plot data
     if make_plots:

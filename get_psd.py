@@ -24,11 +24,6 @@ def get_psds(times, data_H1, data_L1, make_plots=False):
     psd_H1 = interp1d(freqs, Pxx_H1)
     psd_L1 = interp1d(freqs, Pxx_L1)
     
-    # save frequencies and PSDs
-    np.savetxt('frequencies.txt', freqs)
-    np.savetxt('psd_H1.txt', Pxx_H1)
-    np.savetxt('psd_L1.txt', Pxx_L1)
-    
     # plot PSDs
     if make_plots:
         plt.loglog(freqs, Pxx_H1, label='PSD estimate')
