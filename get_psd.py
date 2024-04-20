@@ -5,7 +5,7 @@ from scipy.signal import tukey
 from scipy.interpolate import interp1d
 
 
-def get_psd(times, data_H1, data_L1, make_plots=False):
+def get_psds(times, data_H1, data_L1, make_plots=False):
 
     # define FFT parameters
     dt = times[1] - times[0]
@@ -42,11 +42,8 @@ def get_psd(times, data_H1, data_L1, make_plots=False):
     return [psd_H1, psd_L1]
 
 
+# joint PSD between Hanford and Livingston
+def joint_psd(times, data_H1, data_L1, freqs):
+    psd_H1, psd_L1 = get_psds(times, data_H1, data_L1)
+    return (1/psd_H1(freqs) + 1/psd_L1(freqs))**(-1)
 
-# load data
-times = np.loadtxt('times.txt')
-data_H1 = np.loadtxt('data_H1.txt')
-data_L1 = np.loadtxt('data_L1.txt')
-
-# get psd
-get_psd(times, data_H1, data_L1)
