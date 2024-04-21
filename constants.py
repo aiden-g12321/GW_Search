@@ -3,7 +3,10 @@
 
 # event details
 eventname = 'GW200311_115853'
-GPS_start = 1267963091
+GPS_start_time = 1267963091
+
+# number of segments to analyze data
+num_segments = 17
 
 # unit conversions
 MTSUN_SI = 4.925491025543575903411922162094833998e-6  # Solar mass in seconds
