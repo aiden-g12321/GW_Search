@@ -170,20 +170,3 @@ def ifft(waveform_freq, freqs):
     return [times_shifted, waveform_shifted]
 
 
-
-##################################################################
-######################### TESTING ################################
-##################################################################
-
-
-times = np.loadtxt('data/times_0.dat')
-H1 = np.loadtxt('data/H1_0.dat')
-L1 = np.loadtxt('data/L1_0.dat')
-
-
-fs, data_freq = fft(times, H1)
-
-
-
-
-

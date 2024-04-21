@@ -9,7 +9,6 @@ from constants import *
 from waveform_tools import *
 
 
-
 # requiring mis-match < 0.05, we define an ellipse about every point in parameter space
 # function gets lengths of axes in solar masses, and orientation angle
 def get_axes_angle(freqs, params, Ss, df):
@@ -129,17 +128,5 @@ def test_bank(freqs, Ss, df, make_plots=True):
         plt.show()
     
     return mismatches
-
-
-
-# testing
-times_psd = np.loadtxt('data/times_psd.dat')
-H1_data_psd = np.loadtxt('data/H1_psd.dat')
-L1_data_psd = np.loadtxt('data/L1_psd.dat')
-fs = np.linspace(20., 2048., 2**12+1)
-df = fs[1] - fs[0]
-psd = joint_psd(fs)
-
-test_bank(fs, psd, df)
 
 
