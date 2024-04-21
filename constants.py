@@ -1,4 +1,4 @@
-'''Store constant search parameters for reference.'''
+'''Store constants for reference.'''
 
 
 # event details

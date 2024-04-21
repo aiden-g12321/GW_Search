@@ -132,6 +132,13 @@ def test_bank(freqs, Ss, df, make_plots=True):
 
 
 
+# testing
+times_psd = np.loadtxt('data/times_psd.dat')
+H1_data_psd = np.loadtxt('data/H1_psd.dat')
+L1_data_psd = np.loadtxt('data/L1_psd.dat')
+fs = np.linspace(20., 2048., 2**12+1)
+df = fs[1] - fs[0]
+psd = joint_psd(fs)
 
 test_bank(fs, psd, df)
 

@@ -8,6 +8,7 @@ from PhenomA import *
 from constants import *
 from get_psd import *
 from scipy.integrate import romb as integrate
+from scipy.signal import tukey
 
 
 ##################################################################
@@ -134,6 +135,22 @@ def convert_solar(params):
 ##################################################################
 
 
+# Fourier transform data
+def fft(times, data_time):
+    n = len(data_time)
+    dt = times[1] - times[0]
+    f_sample = int(1./dt)
+    # get the Fourier frequencies of data
+    freqs = np.fft.fftfreq(n)*f_sample
+    # for taking the fft of our template and data
+    dwindow = tukey(n, alpha=1./4)
+    # compute the data fft
+    data_freq = np.fft.fft(data_time*dwindow) / f_sample
+    # freqs = freqs[:int(n/2)]  # remove negative frequencies
+    # data_freq = data_freq[:int(n/2)]  # remove negative frequenies
+    return [freqs, data_freq]
+
+
 # inverse Fourier transform
 def ifft(waveform_freq, freqs):
     Nf = len(freqs)
@@ -153,23 +170,20 @@ def ifft(waveform_freq, freqs):
     return [times_shifted, waveform_shifted]
 
 
+
 ##################################################################
 ######################### TESTING ################################
 ##################################################################
 
-# load data
-times = np.loadtxt('data/times.txt')
-data_H1 = np.loadtxt('data/data_H1.txt')
-data_L1 = np.loadtxt('data/data_L1.txt')
 
-# define frequency bins
-fs = np.linspace(20, 1024, 2**12+1)
-df = fs[1] - fs[0]
-psd = joint_psd(times, data_H1, data_L1, fs)
+times = np.loadtxt('data/times_0.dat')
+H1 = np.loadtxt('data/H1_0.dat')
+L1 = np.loadtxt('data/L1_0.dat')
 
 
-params = np.array([m1_measured_sec, m2_measured_sec, 0., 0., Dl100Mpc])
-waveform_freq = get_waveform_freq(fs, params)
-times, waveform_time = ifft(waveform_freq, fs)
-plt.plot(times, waveform_time)
-plt.show()
+fs, data_freq = fft(times, H1)
+
+
+
+
+

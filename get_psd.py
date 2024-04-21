@@ -42,7 +42,13 @@ def get_psds(times, data_H1, data_L1, make_plots=False):
 
 
 # joint PSD between Hanford and Livingston
-def joint_psd(times, data_H1, data_L1, freqs):
-    psd_H1, psd_L1 = get_psds(times, data_H1, data_L1)
+def joint_psd(freqs):
+    times_psd = np.loadtxt('data/times_psd.dat')
+    H1_data_psd = np.loadtxt('data/H1_psd.dat')
+    L1_data_psd = np.loadtxt('data/L1_psd.dat')
+    psd_H1, psd_L1 = get_psds(times_psd, H1_data_psd, L1_data_psd)
     return (1/psd_H1(freqs) + 1/psd_L1(freqs))**(-1)
+
+
+
 
