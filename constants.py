@@ -19,6 +19,16 @@ m2_measured = 27.7  # solar masses
 m1_measured_sec = m1_measured * MTSUN_SI  # seconds
 m2_measured_sec = m2_measured * MTSUN_SI  # seconds
 
+
+# 100 mega-parsecs in seconds
+Dl100Mpc = 100. * 1.e6 * PC_SI / CLIGHT
+
+# minimum and maximum masses considered
+mass_min = 25.  # solar masses
+mass_max = 50.  # solar masses
+mass_min_sec = mass_min * MTSUN_SI  # seconds
+mass_max_sec = mass_max * MTSUN_SI  # seconds
+
 num_params = 5
 
 

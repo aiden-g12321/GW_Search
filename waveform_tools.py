@@ -130,12 +130,4 @@ fs = np.linspace(20, 1024, 2**12+1)
 df = fs[1] - fs[0]
 psd = joint_psd(times, data_H1, data_L1, fs)
 
-# define parameters
-params = [m1_measured_sec, m2_measured_sec, 0., 0., 100*1.e6*PC_SI/CLIGHT]
-params_offset = [m1_measured_sec + 2.e-7, m2_measured_sec - 2.e-7, 0., 0., 100*1.e6*PC_SI/CLIGHT]
-
-# compute metric components before and after projections
-metric_comp = metric(fs, params, psd, df)
-metric_comp_proj = projected_metric(fs, params, psd, df)
-
 

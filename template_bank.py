@@ -51,9 +51,9 @@ def get_axes_angle(freqs, params, Ss, df):
 # get template bank, templates lie along m2 = m1 - 2*Msun line
 # spacing determined so templates 0.05 mis-match from each other
 def get_template_bank(freqs, Ss, df, make_plots=False):
-    m1 = 25. * MTSUN_SI # start off at 25 solar masses
-    m2 = m1 - 2. * MTSUN_SI
-    params = np.array([m1, m2, 0., 0., 100.*1.e6*PC_SI/CLIGHT])
+    m1 = mass_min_sec
+    m2 = mass_min_sec - 2.*MTSUN_SI
+    params = np.array([m1, m2, 0., 0., Dl100Mpc])
     # initialize arrays for bank
     paramss = [params]
     metrics = [projected_metric(freqs, params, Ss, df)]
@@ -62,7 +62,7 @@ def get_template_bank(freqs, Ss, df, make_plots=False):
     minors = [semi_minor]
     angles = [angle]
     count = 0
-    while params[0] / MTSUN_SI < 50.:  # add to bank until m1 > 50*Msun
+    while params[0] < mass_max_sec:  # add to bank until m1 > 50*Msun
         # move along m2 = m1 - 2*Msun line
         shift = minors[count]*MTSUN_SI / np.sqrt(2)
         params = paramss[count] + np.array([shift, shift, 0., 0., 0.])
@@ -87,19 +87,46 @@ def get_template_bank(freqs, Ss, df, make_plots=False):
             plt.scatter(m1sol, m2sol, color='green')
         plt.xlabel(r'$m_1\;\;(M_\odot)$')
         plt.ylabel(r'$m_2\;\;(M_\odot)$')
-        plt.xlim(25, 50)
-        plt.ylim(25, 50)
+        plt.xlim(mass_min, mass_max)
+        plt.ylim(mass_min, mass_max)
         plt.show()
     
     return [np.array(paramss), np.array(metrics)]
 
 
 
+# test template bank by computing mis-match for random parameters
+def test_bank(freqs, Ss, df, make_plots=True):
+    
+    # get template bank
+    paramss, metrics = get_template_bank(freqs, Ss, df, make_plots=True)
+    num_templates = len(paramss)
+    
+    # random draws in parameter space
+    num_draws = int(1e4)
+    m1s = np.random.uniform(mass_min_sec, mass_max_sec, num_draws)
+    m2s = np.zeros(num_draws)
+    for i in range(num_draws):
+        m2s[i] = np.random.uniform(mass_min_sec, m1s[i])
+    draws = np.array([[m1s[i], m2s[i], 0., 0., Dl100Mpc] for i in range(num_draws)])
+    
+    # for every draw, find the minimum mis-match from bank
+    mismatches = np.zeros(num_draws)
+    for i in range(num_draws):
+        mismatches[i] = min([get_mismatch(metrics[j], paramss[j], draws[i]) for j in range(num_templates)])
+    
+    # plot histogram of mis-match values
+    if make_plots:
+        plt.hist(mismatches, bins=100, weights=np.ones(num_draws) / num_draws)
+        plt.xlabel('mis-match')
+        plt.ylabel('fraction of draws')
+        plt.show()
+    
+    return mismatches
 
-paramss, metrics = get_template_bank(fs, psd, df, make_plots=True)
-print(np.shape(paramss))
-print(np.shape(metrics))
 
 
+
+test_bank(fs, psd, df)
 
 
