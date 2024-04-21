@@ -6,6 +6,10 @@ from get_psd import *
 from scipy.integrate import romb as integrate
 
 
+##################################################################
+################### WAVEFORM GENERATION ##########################
+##################################################################
+
 
 # function to change mass coordinates
 def mass_transform(comp_masses):
@@ -36,8 +40,15 @@ def get_waveform_freq(fs, params):
     return get_amp(fs, params) * np.exp(1.j * get_phase(fs, params))
 
 
+
+##################################################################
+################### WAVEFORM OPERATIONS ##########################
+##################################################################
+
+
+
 # define inner product between waveforms in frequency-domain
-# uses scipy's rhombus numerical integration
+# uses scipy's rhombus numerical integration (requires 2^n+1 frequencies)
 def inner(a, b, Ss, df):
     integrand = 4. * (np.real(a)*np.real(b) + np.imag(a)*np.imag(b)) / Ss
     inner_prod = integrate(integrand, dx=df)
@@ -114,11 +125,33 @@ def convert_solar(params):
 
 
 
+##################################################################
+################### FOURIER TRANSFORM ############################
+##################################################################
 
 
-########################################################
-########### STORE OBJECTS FOR TESTING ##################
-########################################################
+# inverse Fourier transform
+def ifft(waveform_freq, freqs):
+    Nf = len(freqs)
+    df = freqs[1] - freqs[0]
+    Nt = 2 * Nf - 1
+    dt = 1 / (Nt * df)
+    T = Nt * dt
+    waveform_time = np.real(np.fft.irfft(waveform_freq, n=Nt))
+
+    # roll time-domain waveform array to place merger later
+    index_merger = list(waveform_time).index(max(waveform_time))
+    merger_placement = 5./6.  # fraction of window where to place merger
+    index_shift = round(Nt * merger_placement) - index_merger
+    waveform_shifted = np.roll(waveform_time, index_shift)
+    times_shifted = np.linspace(-merger_placement * T, (1-merger_placement)*T, Nt)
+    
+    return [times_shifted, waveform_shifted]
+
+
+##################################################################
+######################### TESTING ################################
+##################################################################
 
 # load data
 times = np.loadtxt('data/times.txt')
@@ -131,3 +164,8 @@ df = fs[1] - fs[0]
 psd = joint_psd(times, data_H1, data_L1, fs)
 
 
+params = np.array([m1_measured_sec, m2_measured_sec, 0., 0., Dl100Mpc])
+waveform_freq = get_waveform_freq(fs, params)
+times, waveform_time = ifft(waveform_freq, fs)
+plt.plot(times, waveform_time)
+plt.show()
