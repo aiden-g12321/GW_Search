@@ -5,6 +5,7 @@ from constants import *
 from waveform_tools import *
 
 
+
 # requiring mis-match < 0.05, we define an ellipse about every point in parameter space
 # function gets lengths of axes in solar masses, and orientation angle
 def get_axes_angle(freqs, params, Ss, df):
@@ -46,6 +47,7 @@ def get_axes_angle(freqs, params, Ss, df):
     angle = np.arctan2(-eigen_vec[1], eigen_vec[0]) * 180. / np.pi
     
     return [semi_major, semi_minor, angle]
+
 
 
 # get template bank, templates lie along m2 = m1 - 2*Msun line
