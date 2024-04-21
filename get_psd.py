@@ -1,3 +1,7 @@
+'''This script estimates the PSD from data and returns interpolated PSD function.
+It also defines a joint PSD for the two detectors.'''
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab

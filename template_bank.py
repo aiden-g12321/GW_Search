@@ -1,3 +1,7 @@
+'''This script calculates the "coverage" ellipses in parameter space, and defines a template bank.
+It tests the template bank by making a histogram of mis-matches from random samples in parameter space.'''
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse

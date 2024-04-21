@@ -1,3 +1,7 @@
+'''This script contains methods for waveform generation, operations (such as inner product,
+template metric, and mismatch), and inverse FFTs'''
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from PhenomA import *
