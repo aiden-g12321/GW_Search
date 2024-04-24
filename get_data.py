@@ -53,5 +53,8 @@ print(get_segment_times(1242459797))
 # for j in range(num_segments):
 #     save_data(start_times[j], stop_times[j], str(j))
 
+# # save full two minutes of data in one file
+# save_data(GPS_start_time, GPS_start_time + 120., 'total', make_plots=True)
+
         
 

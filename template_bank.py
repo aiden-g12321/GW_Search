@@ -104,7 +104,7 @@ def get_template_bank(freqs, Ss, df, make_plots=False):
 def test_bank(freqs, Ss, df, make_plots=True):
     
     # get template bank
-    paramss, metrics = get_template_bank(freqs, Ss, df, make_plots=True)
+    paramss, metrics = get_template_bank(freqs, Ss, df, make_plots=make_plots)
     num_templates = len(paramss)
     
     # random draws in parameter space

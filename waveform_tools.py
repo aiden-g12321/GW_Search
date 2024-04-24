@@ -142,7 +142,7 @@ def fft(times, data_time):
     f_sample = int(1./dt)
     # get the Fourier frequencies of data
     freqs = np.fft.fftfreq(n)*f_sample
-    # for taking the fft of our template and data
+    # define Tukey window
     dwindow = tukey(n, alpha=1./4)
     # compute the data fft
     data_freq = np.fft.fft(data_time*dwindow) / f_sample
@@ -168,5 +168,4 @@ def ifft(waveform_freq, freqs):
     times_shifted = np.linspace(-merger_placement * T, (1-merger_placement)*T, Nt)
     
     return [times_shifted, waveform_shifted]
-
 
