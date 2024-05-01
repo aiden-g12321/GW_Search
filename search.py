@@ -134,8 +134,11 @@ def plot_SNRsq_hist(SNRsq):
 ############################################################
 
 
-# [H_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series] = candidate_search()
+# [max_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series] = candidate_search()
+
+max_params = [1.87201150e-04, 1.77350168e-04, 0.00000000e+00, 0.00000000e+00, 1.02927125e+16]
 max_SNR_segment_index = 8
+
 times = np.loadtxt('data/times_' + str(max_SNR_segment_index) + '.dat')
 H = np.loadtxt('data/H1_' + str(max_SNR_segment_index) + '.dat')
 L = np.loadtxt('data/L1_' + str(max_SNR_segment_index) + '.dat')
@@ -149,6 +152,8 @@ plt.subplot(2, 1, 2)
 plt.plot(times, L_white_bp, label='Livingston', color='orange')
 plt.legend(loc='upper left')
 plt.show()
+
+
 # times, SNRsq = get_SNRsq(H1_series, L1_series)
 
 # save SNR series for convenience
