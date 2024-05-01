@@ -122,12 +122,3 @@ def get_white_bp(times, strain_data, psd_inter):
 
     return strain_bp
 
-
-
-# times = np.loadtxt('data/times_event.dat')
-# H1 = np.loadtxt('data/H1_event.dat')
-# L1 = np.loadtxt('data/L1_event.dat')
-# H_psd, L_psd = individual_psds()
-
-# plot_strain_data(times, H1, H_psd)
-# plot_strain_data(times, L1, L_psd)

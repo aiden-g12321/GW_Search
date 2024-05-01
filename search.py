@@ -153,8 +153,8 @@ L1_series = np.loadtxt('data/L_SNR.dat')
 times = np.loadtxt('data/times_SNRsq.dat')
 SNRsq = np.loadtxt('data/combined_SNRsq.dat')
 
-# plot_SNR_hist(H1_series, L1_series)
-# plot_SNRsq_hist(SNRsq)
+plot_SNR_hist(H1_series, L1_series)
+plot_SNRsq_hist(SNRsq)
 
 
 
