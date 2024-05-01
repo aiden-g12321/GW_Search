@@ -60,12 +60,11 @@ def plot_strain_data(times, strain_data, psd_inter):
     dt = times[1] - times[0]
     fs = int(1./dt)
     
-    # create our 4 second data window
-    window_len = 4*fs
+    # create our 8 second data window
+    window_len = int(time_segment * fs)
     dwindow = tukey(window_len, alpha=1./4)
 
     # plot original strain data
-    # only care about 4s around event
     plt.figure(figsize=(8, 8))
     plt.subplot(4, 1, 1)
     indxt = range(len(times))
@@ -100,7 +99,28 @@ def plot_strain_data(times, strain_data, psd_inter):
     plt.tight_layout()
     plt.ylim([-8, 8])
     plt.show()
+    
+    return
+    
 
+# get whitened / bandpassed data
+def get_white_bp(times, strain_data, psd_inter):
+    
+    # frequency parameters
+    fband = [35.0, 350.0]
+    dt = times[1] - times[0]
+    fs = int(1./dt)
+    
+    # window data
+    window_len = int(time_segment * fs)
+    dwindow = tukey(window_len, alpha=1./4)
+    strain_windowed = dwindow * strain_data
+    # whiten data
+    strain_whitened = whiten(strain_windowed, psd_inter, dt)
+    # bandpass data
+    strain_bp = bandpass(strain_whitened, fband, fs)
+
+    return strain_bp
 
 
 

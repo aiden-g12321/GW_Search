@@ -43,7 +43,7 @@ def get_segment_times(event_start_time):
         stop_time = stop_times[i]
     return [start_times, stop_times]
 
-print(get_segment_times(1242459797))
+
 
 # # save data for psd estimation
 # save_data(GPS_start_time-60., GPS_start_time, 'psd')
@@ -56,5 +56,5 @@ print(get_segment_times(1242459797))
 # # save full two minutes of data in one file
 # save_data(GPS_start_time, GPS_start_time + 120., 'total', make_plots=True)
 
-save_data(GPS_event_time - 2., GPS_event_time + 2., 'event', make_plots=True)      
+# save_data(GPS_event_time - 2., GPS_event_time + 2., 'event', make_plots=True)      
 

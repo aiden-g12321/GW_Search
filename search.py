@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from SNR_series import *
 from get_psd import *
+from get_data import *
+from signal_tools import *
 
 
 
@@ -18,6 +20,13 @@ def candidate_search(make_plots=False):
     H1_max_time = H1_series[0,list(H1_series[1]).index(max(H1_series[1]))]
     L1_max_time = L1_series[0,list(L1_series[1]).index(max(L1_series[1]))]
     time_delay = abs(H1_max_time - L1_max_time)
+    
+    # find time segment where max SNR lies
+    start_times, stop_times = get_segment_times(GPS_start_time)
+    for i in range(num_segments):
+        if start_times[i] < H1_max_time < stop_times[i]:
+            max_SNR_segment_index = i
+        
     
     # check for candidacy
     if np.not_equal(H_params, L_params).any():
@@ -39,7 +48,7 @@ def candidate_search(make_plots=False):
         plt.show()
     
     else:
-        return [H_params, H1_max_time, L1_max_time, H1_series, L1_series]
+        return [H_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series]
 
 
 
@@ -125,7 +134,21 @@ def plot_SNRsq_hist(SNRsq):
 ############################################################
 
 
-[params, H_series, L_series] = candidate_search()
+# [H_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series] = candidate_search()
+max_SNR_segment_index = 8
+times = np.loadtxt('data/times_' + str(max_SNR_segment_index) + '.dat')
+H = np.loadtxt('data/H1_' + str(max_SNR_segment_index) + '.dat')
+L = np.loadtxt('data/L1_' + str(max_SNR_segment_index) + '.dat')
+H1_psd, L1_psd = individual_psds()
+H_white_bp = get_white_bp(times, H, H1_psd)
+L_white_bp = get_white_bp(times, L, L1_psd)
+plt.subplot(2, 1, 1)
+plt.plot(times, H_white_bp, label='Hanford')
+plt.legend(loc='upper left')
+plt.subplot(2, 1, 2)
+plt.plot(times, L_white_bp, label='Livingston', color='orange')
+plt.legend(loc='upper left')
+plt.show()
 # times, SNRsq = get_SNRsq(H1_series, L1_series)
 
 # save SNR series for convenience
