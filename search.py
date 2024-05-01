@@ -1,0 +1,121 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from SNR_series import *
+from get_psd import *
+
+
+
+# do GW candidate search using matched-filtering with template bank
+def candidate_search(make_plots=False):
+
+    # load PSDs
+    H_psd, L_psd = individual_psds()
+
+    # get maximum of SNR series over templates
+    [H_params, L_params, H1_series, L1_series] = max_template_SNR(H_psd, L_psd)
+
+    # check Hanford and Livingston max SNRs are with 10ms of one another
+    H1_max_time = H1_series[0,list(H1_series[1]).index(max(H1_series[1]))]
+    L1_max_time = L1_series[0,list(L1_series[1]).index(max(L1_series[1]))]
+    time_delay = abs(H1_max_time - L1_max_time)
+    
+    # check for candidacy
+    if np.not_equal(H_params, L_params).any():
+        print('H and L SNR series maximized at different templates!')
+    if time_delay > 0.010:
+        print('time delay > 10ms')
+    
+    if make_plots:
+        plt.subplot(2, 1, 1)
+        plt.plot(H1_series[0], H1_series[1], label='Hanford')
+        plt.axvline(GPS_event_time, color='red')
+        plt.axvline(H1_max_time, color='green')
+        plt.legend(loc='upper left')
+        plt.subplot(2, 1, 2)
+        plt.plot(L1_series[0], L1_series[1], label='Livingston', color='orange')
+        plt.axvline(GPS_event_time, color='red')
+        plt.axvline(L1_max_time, color='green')
+        plt.legend(loc='upper left')
+        plt.show()
+    
+    else:
+        return [H_params, H1_series, L1_series]
+
+
+
+# plot SNR histograms per detector
+def plot_SNR_hist(H1_series, L1_series):
+    
+    # get mean and standard deviation of SNR series
+    H_mean = np.mean(H1_series[1])
+    L_mean = np.mean(L1_series[1])
+    H_std = np.std(H1_series[1])
+    L_std = np.std(L1_series[1])
+    
+    # plot histogram
+    plt.subplot(2, 1, 1)
+    plt.hist(H1_series[1], bins=100, label='Hanford')
+    plt.axvline(H_mean + H_std * 5, color='red', label=r'$\mu + 5\sigma$')
+    plt.axvline(max(H1_series[1]), color='green', label='maximum SNR')
+    plt.legend(loc='upper right')
+    plt.xlabel('SNR')
+    plt.subplot(2, 1, 2)
+    plt.hist(L1_series[1], bins=100, label='Livingston')
+    plt.axvline(L_mean + L_std * 5, color='red', label=r'$\mu + 5\sigma$')
+    plt.axvline(max(L1_series[1]), color='green', label='maximum SNR')
+    plt.legend(loc='upper right')
+    plt.xlabel('SNR')
+    plt.show()
+    
+    return
+
+
+# get SNR-squared series (combined detectors)
+def get_SNRsq(H1_series, L1_series):
+    
+    # initialize times and SNR-squared arrays
+    times = H1_series[0]
+    SNRsq = H1_series[1]**2
+    
+    dt = times[1] - times[0]
+    
+    # loop through every time
+    for i in range(len(H1_series[0])):
+        print(i / len(times))
+        time = times[i]
+        # get SNR series from Livingston +/- 10ms
+        # keep_indices = np.where(np.bitwise_and(times > time - 0.010, times < time + 0.010))
+        lower_index = int(i - 0.010/dt)
+        upper_index = int(i + 0.010/dt)
+        keep_indices = range(lower_index, upper_index)
+        SNR_keep = np.array(L1_series[1])[keep_indices]
+        # get maximum SNR from Livingston in this domain
+        max_SNR_L = max(SNR_keep)
+        # compute combined SNR-squared
+        SNRsq[i] += max_SNR_L**2
+    
+    return [times, SNRsq]
+
+
+
+# [params, H_series, L_series] = candidate_search()
+
+# save SNR series for convenience
+# np.savetxt('data/H_SNR.dat', H_series)
+# np.savetxt('data/L_SNR.dat', L_series)
+
+# load SNR series
+H1_series = np.loadtxt('data/H_SNR.dat')
+L1_series = np.loadtxt('data/L_SNR.dat')
+
+# plot_SNR_hist(H1_series, L1_series)
+times, SNRsq = get_SNRsq(H1_series, L1_series)
+
+# save SNRsq series for convenience
+np.savetxt('data/times_SNRsq.dat', times)
+np.savetxt('data/combined_SNRsq.dat', SNRsq)
+
+plt.plot(times, SNRsq)
+plt.show()
+
+

@@ -136,36 +136,12 @@ def max_template_SNR(H1_psd, L1_psd):
     # find template with maximum SNR
     H_max_index = H_maxs.index(max(H_maxs))
     L_max_index = L_maxs.index(max(L_maxs))
-    if H_max_index != L_max_index:
-        print('H and L maximized by different templates!')
-    max_params = paramss[H_max_index]
+    H_max_params = paramss[H_max_index]
+    L_max_params = paramss[L_max_index]
     H_SNR_series_max = H_SNR_series[H_max_index]
     L_SNR_series_max = L_SNR_series[L_max_index]
     
-    return [max_params, H_SNR_series_max, L_SNR_series_max]
-    
-    
+    return [H_max_params, L_max_params, H_SNR_series_max, L_SNR_series_max]
 
 
-#################################################################
-######################### TESTING ###############################
-#################################################################
-
-
-H_psd, L_psd = individual_psds()
-
-# params = [m1_measured_sec, m2_measured_sec, 0., 0., Dl100Mpc]
-max_params, H1_series, L1_series = max_template_SNR(H_psd, L_psd)
-
-print('best template parameters: ' + str(max_params))
-
-plt.subplot(2, 1, 1)
-plt.plot(H1_series[0], H1_series[1], label='Hanford')
-plt.axvline(GPS_event_time, color='red')
-plt.legend(loc='upper left')
-plt.subplot(2, 1, 2)
-plt.plot(L1_series[0], L1_series[1], label='Livingston', color='orange')
-plt.axvline(GPS_event_time, color='red')
-plt.legend(loc='upper left')
-plt.show()
 
