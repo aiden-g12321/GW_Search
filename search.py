@@ -21,7 +21,7 @@ def get_SNR_series(template_params, strain_data, times, psd_inter):
     df = freqs[1] - freqs[0]
     
     # bandpass data
-    # strain_data = bandpass(strain_data, [35.0, 350.0], f_sample)
+    strain_data = bandpass(strain_data, [35.0, 1024.0], f_sample)
     
     # tukey window for taking the fft of our template and data
     dwindow = tukey(n, alpha=1./4)
@@ -32,6 +32,10 @@ def get_SNR_series(template_params, strain_data, times, psd_inter):
     template_fft = np.zeros(len(data_fft), dtype='complex')
     template_fft[1:n//2] = template_fft_positives
     template_fft[n//2+1:] = template_fft_positives.conjugate()
+    
+    # apply time shift so iFFT is centered correctly
+    tau = get_tau(template_params)
+    template_fft *= np.exp(1.j * 2 * np.pi * freqs * tau)
 
     # -- Zero out negative frequencies
     negindx = np.where(freqs < 0)
@@ -40,7 +44,7 @@ def get_SNR_series(template_params, strain_data, times, psd_inter):
     # get PSD at frequencies
     psd = psd_inter(np.abs(freqs))
 
-    optimal = data_fft * template_fft.conjugate() / psd  
+    optimal = data_fft * template_fft.conjugate() / psd
     optimal_time = 4 * np.fft.ifft(optimal) * f_sample
     
     sigmasq = 2 * (template_fft * template_fft.conjugate() / psd).sum() * df
@@ -101,25 +105,37 @@ times = np.loadtxt('data/times_event.dat')
 H1 = np.loadtxt('data/H1_event.dat')
 L1 = np.loadtxt('data/L1_event.dat')
 
-plt.plot(times, H1, label='Hanford')
-plt.plot(times, L1, label='Livingston')
-plt.legend()
-plt.show()
+H_psd, L_psd = individual_psds()
+
 
 params = [m1_measured_sec, m2_measured_sec, 0., 0., Dl100Mpc]
-H_psd, L_psd = individual_psds()
 H1_SNR_series = get_SNR_series(params, H1, times, H_psd)
 L1_SNR_series = get_SNR_series(params, L1, times, L_psd)
+max_indx_H = np.where(H1_SNR_series == max(H1_SNR_series))
+max_indx_L = np.where(L1_SNR_series == max(L1_SNR_series))
+print(times[max_indx_H][0])
+print(times[max_indx_L][0])
 
-fs = np.linspace(0.1, 2048., 2**12+1)
-plt.subplot(3, 1, 1)
-plt.loglog(fs, H_psd(fs), label='Hanford')
-plt.loglog(fs, L_psd(fs), label='Livingston')
-plt.legend(loc='upper right')
-plt.subplot(3, 1, 2)
-plt.plot(times, H1_SNR_series, label='Hanford')
-plt.legend(loc='upper left')
-plt.subplot(3, 1, 3)
-plt.plot(times, L1_SNR_series, label='Livingston', color='orange')
-plt.legend(loc='upper left')
-plt.show()
+
+
+
+bank_freqs = np.linspace(20., 2048., 2**12+1)
+bank_psd = joint_psd(bank_freqs)
+bank_df = bank_freqs[1] - bank_freqs[0]
+paramss, metrics = get_template_bank(bank_freqs, bank_psd, bank_df)
+for i in range(len(paramss)):
+    params = paramss[i]
+    H1_SNR_series = get_SNR_series(params, H1, times, H_psd)
+    L1_SNR_series = get_SNR_series(params, L1, times, L_psd)
+    max_indx_H = np.where(H1_SNR_series == max(H1_SNR_series))
+    max_indx_L = np.where(L1_SNR_series == max(L1_SNR_series))
+    print(times[max_indx_H][0])
+    print(times[max_indx_L][0])
+
+    plt.subplot(2, 1, 1)
+    plt.plot(times, H1_SNR_series, label='Hanford')
+    plt.legend(loc='upper left')
+    plt.subplot(2, 1, 2)
+    plt.plot(times, L1_SNR_series, label='Livingston', color='orange')
+    plt.legend(loc='upper left')
+    plt.show()

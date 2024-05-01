@@ -42,6 +42,16 @@ def get_phase(fs, params):
     return Psieff(fs, M, eta, t0=t0, phi0=phi0)
 
 
+# get time shift to apply before iFFT in SNR time series
+def get_tau(params):
+    fs = np.linspace(20., 2048., 2**12+1)
+    phase = get_phase(fs, params)
+    size = len(phase)
+    slope = (phase[size//2 + 1] - phase[size//2 - 1]) / (fs[size//2 + 1] - fs[size//2-1])
+    tau = -slope / (2*np.pi)
+    return tau
+
+
 # get frequency-domain waveform
 def get_waveform_freq(fs, params):
     return get_amp(fs, params) * np.exp(1.j * get_phase(fs, params))
