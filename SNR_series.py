@@ -22,14 +22,14 @@ def get_SNR_series(template_params, strain_data, times, psd_inter):
     df = freqs[1] - freqs[0]
     
     # bandpass data
-    strain_data = bandpass(strain_data, [35.0, 1024.0], f_sample)
+    # strain_data = bandpass(strain_data, [35.0, 1024.0], f_sample)
     
     # tukey window for taking the fft of our template and data
     dwindow = tukey(n, alpha=1./4)
     
     # compute the template and data ffts
     template_fft_positives = get_waveform_freq(freqs[1:n//2], template_params)
-    data_fft = np.fft.fft(strain_data*dwindow) / f_sample
+    data_fft = np.fft.fft(strain_data*dwindow)
     template_fft = np.zeros(len(data_fft), dtype='complex')
     template_fft[1:n//2] = template_fft_positives
     template_fft[n//2+1:] = template_fft_positives.conjugate()
@@ -142,6 +142,5 @@ def max_template_SNR(H1_psd, L1_psd):
     L_SNR_series_max = L_SNR_series[L_max_index]
     
     return [H_max_params, L_max_params, H_SNR_series_max, L_SNR_series_max]
-
 
 

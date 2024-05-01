@@ -18,7 +18,7 @@ def get_psds(times, data_H1, data_L1, make_plots=False):
     NOVL = int( 1 * NFFT / 2 )  # number of points of overlap between segments used in Welch averaging
     psd_window = tukey(NFFT, alpha=1./4)
     
-    NFFTH = int(4 * fs)  # use 4 seconds of data for each FFT
+    NFFTH = int(1 * fs)  # use 4 seconds of data for each FFT
     NOVLH = int(1 * NFFTH / 2)  # number of points of overlap between segments used in Welch averaging
     psd_windowH = tukey(NFFTH, alpha=1./4)
 

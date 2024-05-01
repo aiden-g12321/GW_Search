@@ -16,6 +16,10 @@ def candidate_search(make_plots=False):
     # get maximum of SNR series over templates
     [H_params, L_params, H1_series, L1_series] = max_template_SNR(H_psd, L_psd)
 
+    # save SNR series
+    np.savetxt('data/H_SNR.dat', H1_series)
+    np.savetxt('data/L_SNR.dat', L1_series)
+
     # check Hanford and Livingston max SNRs are with 10ms of one another
     H1_max_time = H1_series[0,list(H1_series[1]).index(max(H1_series[1]))]
     L1_max_time = L1_series[0,list(L1_series[1]).index(max(L1_series[1]))]
@@ -37,13 +41,9 @@ def candidate_search(make_plots=False):
     if make_plots:
         plt.subplot(2, 1, 1)
         plt.plot(H1_series[0], H1_series[1], label='Hanford')
-        plt.axvline(GPS_event_time, color='red')
-        plt.axvline(H1_max_time, color='green')
         plt.legend(loc='upper left')
         plt.subplot(2, 1, 2)
         plt.plot(L1_series[0], L1_series[1], label='Livingston', color='orange')
-        plt.axvline(GPS_event_time, color='red')
-        plt.axvline(L1_max_time, color='green')
         plt.legend(loc='upper left')
         plt.show()
     
@@ -53,7 +53,11 @@ def candidate_search(make_plots=False):
 
 
 # plot SNR histograms per detector
-def plot_SNR_hist(H1_series, L1_series):
+def plot_SNR_hist():
+    
+    # load SNR series
+    H1_series = np.loadtxt('data/H_SNR.dat')
+    L1_series = np.loadtxt('data/L_SNR.dat')
     
     # get mean and standard deviation of SNR series
     H_mean = np.mean(H1_series[1])
@@ -80,7 +84,11 @@ def plot_SNR_hist(H1_series, L1_series):
 
 
 # get SNR-squared series (combined detectors)
-def get_SNRsq(H1_series, L1_series):
+def get_SNRsq(make_plots=False):
+    
+    # load SNR series
+    H1_series = np.loadtxt('data/H_SNR.dat')
+    L1_series = np.loadtxt('data/L_SNR.dat')
     
     # initialize times and SNR-squared arrays
     times = H1_series[0]
@@ -103,15 +111,26 @@ def get_SNRsq(H1_series, L1_series):
         max_SNR_L = max(SNR_keep)
         # compute combined SNR-squared
         SNRsq[i] += max_SNR_L**2
+        
+    # save SNR-squared series
+    SNRsq_series = np.array([times, SNRsq])
+    np.savetxt('data/SNRsq.dat', SNRsq_series)
     
-    return [times, SNRsq]
+    if make_plots:
+        plt.plot(times, SNRsq)
+        plt.xlabel('time (s)')
+        plt.ylabel('SNR' + r'$^2$')
+        plt.show()
+    
+    return SNRsq_series
 
 
 
 # plot SNR-squared histograms (detectors combined)
-def plot_SNRsq_hist(SNRsq):
+def plot_SNRsq_hist():
     
     # get mean and standard deviation of SNR series
+    times, SNRsq = np.loadtxt('data/SNRsq.dat')
     mean = np.mean(SNRsq)
     st_dev = np.std(SNRsq)
     
@@ -127,34 +146,17 @@ def plot_SNRsq_hist(SNRsq):
 
 
 
-
-
 ############################################################
 ###################### TESTING #############################
 ############################################################
 
 
 # [max_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series] = candidate_search()
-# times, SNRsq = get_SNRsq(H1_series, L1_series)
+# times, SNRsq = get_SNRsq(make_plots=True)
 
-# save SNR series for convenience
-# np.savetxt('data/H_SNR.dat', H_series)
-# np.savetxt('data/L_SNR.dat', L_series)
 
-# save SNRsq series for convenience
-# np.savetxt('data/times_SNRsq.dat', times)
-# np.savetxt('data/combined_SNRsq.dat', SNRsq)
-
-# load SNR series
-H1_series = np.loadtxt('data/H_SNR.dat')
-L1_series = np.loadtxt('data/L_SNR.dat')
-
-# load SNR-squared series
-times = np.loadtxt('data/times_SNRsq.dat')
-SNRsq = np.loadtxt('data/combined_SNRsq.dat')
-
-plot_SNR_hist(H1_series, L1_series)
-plot_SNRsq_hist(SNRsq)
+plot_SNR_hist()
+plot_SNRsq_hist()
 
 
 
