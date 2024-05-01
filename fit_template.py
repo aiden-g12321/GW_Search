@@ -44,7 +44,7 @@ def fit_template(strain_data, times, psd_inter, max_params):
     data_with_inphase = np.real(2 * (data_fft * normal_waveform.conjugate() / psd).sum() * df)
     phi = np.arctan2(data_with_quad, data_with_inphase)
     
-    # find phase that minimizes chi-squared
+    # make frequency-domain waveform with optimal phase
     template_freq = np.zeros(n, dtype='complex')
     phase_max_params = np.array(max_params).copy()
     phase_max_params[3] = phi
