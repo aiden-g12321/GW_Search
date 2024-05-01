@@ -38,3 +38,7 @@ mass_max_sec = mass_max * MTSUN_SI  # seconds
 num_params = 5
 
 
+# maximum time delay between detectors
+max_time_delay = 0.010  # 10 milli-second
+
+

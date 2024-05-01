@@ -22,8 +22,8 @@ def candidate_search(make_plots=False):
     # check for candidacy
     if np.not_equal(H_params, L_params).any():
         print('H and L SNR series maximized at different templates!')
-    if time_delay > 0.010:
-        print('time delay > 10ms')
+    if time_delay > max_time_delay:
+        print('time delay > 10 milli-second')
     
     if make_plots:
         plt.subplot(2, 1, 1)
@@ -39,7 +39,7 @@ def candidate_search(make_plots=False):
         plt.show()
     
     else:
-        return [H_params, H1_series, L1_series]
+        return [H_params, H1_max_time, L1_max_time, H1_series, L1_series]
 
 
 
@@ -78,15 +78,16 @@ def get_SNRsq(H1_series, L1_series):
     SNRsq = H1_series[1]**2
     
     dt = times[1] - times[0]
+    n = len(times)
     
     # loop through every time
-    for i in range(len(H1_series[0])):
-        print(i / len(times))
+    for i in range(n):
+        print(i / n)
         time = times[i]
         # get SNR series from Livingston +/- 10ms
-        # keep_indices = np.where(np.bitwise_and(times > time - 0.010, times < time + 0.010))
-        lower_index = int(i - 0.010/dt)
-        upper_index = int(i + 0.010/dt)
+        # keep_indices = np.where(np.bitwise_and(times > time - max_time_delay, times < time + max_time_delay))
+        lower_index = max(0, int(i - max_time_delay/dt))
+        upper_index = min(int(i + max_time_delay/dt), n)
         keep_indices = range(lower_index, upper_index)
         SNR_keep = np.array(L1_series[1])[keep_indices]
         # get maximum SNR from Livingston in this domain
@@ -98,24 +99,53 @@ def get_SNRsq(H1_series, L1_series):
 
 
 
-# [params, H_series, L_series] = candidate_search()
+# plot SNR-squared histograms (detectors combined)
+def plot_SNRsq_hist(SNRsq):
+    
+    # get mean and standard deviation of SNR series
+    mean = np.mean(SNRsq)
+    st_dev = np.std(SNRsq)
+    
+    # plot histogram
+    plt.hist(SNRsq, bins=100, label='combined SNR' + r'$^2$')
+    plt.axvline(mean + st_dev * 5, color='red', label=r'$\mu + 5\sigma$')
+    plt.axvline(max(SNRsq), color='green', label='maximum SNR' + r'$^2$')
+    plt.legend(loc='upper right')
+    plt.xlabel('SNR' + r'$^2$')
+    plt.show()
+    
+    return
+
+
+
+
+
+############################################################
+###################### TESTING #############################
+############################################################
+
+
+[params, H_series, L_series] = candidate_search()
+# times, SNRsq = get_SNRsq(H1_series, L1_series)
 
 # save SNR series for convenience
 # np.savetxt('data/H_SNR.dat', H_series)
 # np.savetxt('data/L_SNR.dat', L_series)
 
+# save SNRsq series for convenience
+# np.savetxt('data/times_SNRsq.dat', times)
+# np.savetxt('data/combined_SNRsq.dat', SNRsq)
+
 # load SNR series
 H1_series = np.loadtxt('data/H_SNR.dat')
 L1_series = np.loadtxt('data/L_SNR.dat')
 
+# load SNR-squared series
+times = np.loadtxt('data/times_SNRsq.dat')
+SNRsq = np.loadtxt('data/combined_SNRsq.dat')
+
 # plot_SNR_hist(H1_series, L1_series)
-times, SNRsq = get_SNRsq(H1_series, L1_series)
+# plot_SNRsq_hist(SNRsq)
 
-# save SNRsq series for convenience
-np.savetxt('data/times_SNRsq.dat', times)
-np.savetxt('data/combined_SNRsq.dat', SNRsq)
-
-plt.plot(times, SNRsq)
-plt.show()
 
 

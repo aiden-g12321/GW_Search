@@ -100,7 +100,9 @@ def plot_strain_data(times, strain_data, psd_inter):
     plt.tight_layout()
     plt.ylim([-8, 8])
     plt.show()
-    
+
+
+
 
 # times = np.loadtxt('data/times_event.dat')
 # H1 = np.loadtxt('data/H1_event.dat')
