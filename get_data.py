@@ -56,5 +56,5 @@ print(get_segment_times(1242459797))
 # # save full two minutes of data in one file
 # save_data(GPS_start_time, GPS_start_time + 120., 'total', make_plots=True)
 
-        
+save_data(GPS_event_time - 2., GPS_event_time + 2., 'event', make_plots=True)      
 

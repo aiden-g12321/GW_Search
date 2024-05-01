@@ -1,14 +1,16 @@
-'''This script contains methods for waveform generation, operations (such as inner product,
-template metric, and mismatch), and inverse FFTs'''
+'''This script contains methods for waveform generation and operations such as inner product,
+template metric, and mismatch.
+'''
 
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import romb as integrate
+from scipy.signal import tukey, butter, filtfilt
+
 from PhenomA import *
 from constants import *
 from get_psd import *
-from scipy.integrate import romb as integrate
-from scipy.signal import tukey
 
 
 ##################################################################
@@ -128,44 +130,4 @@ def convert_solar(params):
     params = np.array(params)
     return params[:2] / MTSUN_SI
 
-
-
-##################################################################
-################### FOURIER TRANSFORM ############################
-##################################################################
-
-
-# Fourier transform data
-def fft(times, data_time):
-    n = len(data_time)
-    dt = times[1] - times[0]
-    f_sample = int(1./dt)
-    # get the Fourier frequencies of data
-    freqs = np.fft.fftfreq(n)*f_sample
-    # define Tukey window
-    dwindow = tukey(n, alpha=1./4)
-    # compute the data fft
-    data_freq = np.fft.fft(data_time*dwindow) / f_sample
-    # freqs = freqs[:int(n/2)]  # remove negative frequencies
-    # data_freq = data_freq[:int(n/2)]  # remove negative frequenies
-    return [freqs, data_freq]
-
-
-# inverse Fourier transform
-def ifft(waveform_freq, freqs):
-    Nf = len(freqs)
-    df = freqs[1] - freqs[0]
-    Nt = 2 * Nf - 1
-    dt = 1 / (Nt * df)
-    T = Nt * dt
-    waveform_time = np.real(np.fft.irfft(waveform_freq, n=Nt))
-
-    # roll time-domain waveform array to place merger later
-    index_merger = list(waveform_time).index(max(waveform_time))
-    merger_placement = 5./6.  # fraction of window where to place merger
-    index_shift = round(Nt * merger_placement) - index_merger
-    waveform_shifted = np.roll(waveform_time, index_shift)
-    times_shifted = np.linspace(-merger_placement * T, (1-merger_placement)*T, Nt)
-    
-    return [times_shifted, waveform_shifted]
 

@@ -4,6 +4,7 @@
 # event details
 eventname = 'GW200311_115853'
 GPS_start_time = 1267963091
+GPS_event_time = 1267963151.3
 
 # data segmenting parameters
 num_segments = 17  # number of segments
