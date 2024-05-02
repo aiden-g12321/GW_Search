@@ -42,8 +42,10 @@ def candidate_search(make_plots=False):
     # check for candidacy
     if np.not_equal(H_params, L_params).any():
         print('H and L SNR series maximized at different templates!')
+        return None
     if time_delay > max_time_delay:
         print('time delay > 10 milli-second')
+        return None
     
     if make_plots:
         plt.subplot(2, 1, 1)
@@ -54,8 +56,7 @@ def candidate_search(make_plots=False):
         plt.legend(loc='upper left')
         plt.show()
     
-    else:
-        return [H_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series]
+    return [H_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series]
 
 
 
