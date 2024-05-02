@@ -1,5 +1,5 @@
 '''This script contains methods for waveform generation and operations such as inner product,
-template metric, and mismatch.
+template metric, and mis-match.
 '''
 
 

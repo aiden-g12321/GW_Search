@@ -1,3 +1,9 @@
+'''This script fits a whitened template to whitened and bandpassed data in the time-domain.
+The fit is so the chi-squared is minimized over the reference time, phase, and amplitude.
+'''
+
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from waveform_tools import *
@@ -6,6 +12,7 @@ from signal_tools import *
 
 
 # fit whitened template to whitened data
+# minimizes chi-squared over reference time, phase, and amplitude
 def fit_template(strain_data, times, psd_inter, max_params):
     
     # get the Fourier frequencies of data
@@ -108,18 +115,11 @@ def plot_templates(max_params, H_data, L_data):
 
 
 
-
+# plot template over whitened and bandpassed data
 max_params = [1.87201150e-04, 1.77350168e-04, 0.00000000e+00, 0.00000000e+00, 1.02927125e+16]
 max_SNR_segment_index = 8
 times = np.loadtxt('data/times_' + str(max_SNR_segment_index) + '.dat')
 H = np.loadtxt('data/H1_' + str(max_SNR_segment_index) + '.dat')
 L = np.loadtxt('data/L1_' + str(max_SNR_segment_index) + '.dat')
 plot_templates(max_params, H, L)
-
-
-
-
-
-
-
 

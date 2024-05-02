@@ -1,3 +1,8 @@
+'''This script stores whitening and bandpassing methods.
+'''
+
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import tukey, butter, filtfilt
@@ -6,21 +11,8 @@ from get_psd import *
 
 
 
+# whiten strain data
 def whiten(strain, interp_psd, dt, phase_shift=0, time_shift=0):
-    '''Whitens strain data given the psd and sample rate, also applying a phase
-    shift and time shift.
-
-    Args:
-        strain (ndarray): strain data
-        interp_psd (interpolating function): function to take in freqs and output 
-            the average power at that freq 
-        dt (float): sample time interval of data
-        phase_shift (float, optional): phase shift to apply to whitened data
-        time_shift (float, optional): time shift to apply to whitened data (s)
-    
-    Returns:
-        ndarray: array of whitened strain data
-    '''
     Nt = len(strain)
     # take the fourier transform of the data
     freqs = np.fft.rfftfreq(Nt, dt)
@@ -37,23 +29,15 @@ def whiten(strain, interp_psd, dt, phase_shift=0, time_shift=0):
     return white_ht
 
 
+# bandpass strain data
 def bandpass(strain, fband, fs):
-    """Bandpasses strain data using a butterworth filter.
-    
-    Args:
-        strain (ndarray): strain data to bandpass
-        fband (ndarray): low and high-pass filter values to use
-        fs (float): sample rate of data
-    
-    Returns:
-        ndarray: array of bandpassed strain data
-    """
     bb, ab = butter(4, [fband[0]*2./fs, fband[1]*2./fs], btype='band')
     normalization = np.sqrt((fband[1]-fband[0])/(fs/2))
     strain_bp = filtfilt(bb, ab, strain) / normalization
     return strain_bp
 
 
+# plot whiten and bandpassed strain data
 def plot_strain_data(times, strain_data, psd_inter):
     
     fband = [35.0, 350.0]
@@ -103,7 +87,7 @@ def plot_strain_data(times, strain_data, psd_inter):
     return
     
 
-# get whitened / bandpassed data
+# get whitened / bandpassed data array
 def get_white_bp(times, strain_data, psd_inter):
     
     # frequency parameters

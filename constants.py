@@ -1,4 +1,5 @@
-'''Store constants for reference.'''
+'''Store constants for reference.
+'''
 
 
 # event details

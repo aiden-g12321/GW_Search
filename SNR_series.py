@@ -1,7 +1,12 @@
+'''This script computes the SNR time-series given a template bank and strain data.
+It contains methods to compute the SNR series for a given array of data, for full 2 minutes of data,
+or the series that is maximized over the template bank.
+'''
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import tukey
-
 from constants import *
 from waveform_tools import *
 from template_bank import *

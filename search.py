@@ -1,3 +1,10 @@
+'''This script searches for GW candidate. It obtains the SNR time-series maximized over 
+the template bank. It also computes the combined SNR^2 time-series and SNR(^2) histograms 
+to estimate significance.
+'''
+
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from SNR_series import *
@@ -102,7 +109,6 @@ def get_SNRsq(make_plots=False):
         print(i / n)
         time = times[i]
         # get SNR series from Livingston +/- 10ms
-        # keep_indices = np.where(np.bitwise_and(times > time - max_time_delay, times < time + max_time_delay))
         lower_index = max(0, int(i - max_time_delay/dt))
         upper_index = min(int(i + max_time_delay/dt), n)
         keep_indices = range(lower_index, upper_index)
@@ -134,6 +140,8 @@ def plot_SNRsq_hist():
     mean = np.mean(SNRsq)
     st_dev = np.std(SNRsq)
     
+    significance = (max(SNRsq) - mean) / st_dev
+    
     # plot histogram
     plt.hist(SNRsq, bins=100, label='combined SNR' + r'$^2$')
     plt.axvline(mean + st_dev * 5, color='red', label=r'$\mu + 5\sigma$')
@@ -142,7 +150,7 @@ def plot_SNRsq_hist():
     plt.xlabel('SNR' + r'$^2$')
     plt.show()
     
-    return
+    return significance
 
 
 
@@ -151,12 +159,25 @@ def plot_SNRsq_hist():
 ############################################################
 
 
+# do search and get SNR series
 # [max_params, H1_max_time, L1_max_time, max_SNR_segment_index, H1_series, L1_series] = candidate_search()
 # times, SNRsq = get_SNRsq(make_plots=True)
 
+# calculate amplitude ratio
+H1_series = np.loadtxt('data/H_SNR.dat')
+L1_series = np.loadtxt('data/L_SNR.dat')
+print('amp ratio = ' + str(max(H1_series[1]) / max(L1_series[1])))
 
+# plot SNR^2 time-series
+times, SNRsq = np.loadtxt('data/SNRsq.dat')
+plt.plot(times, SNRsq)
+plt.axvline(GPS_event_time, color='red', alpha=0.5)
+plt.xlabel('time (s)')
+plt.ylabel('SNR' + r'$^2$')
+plt.show()
+
+# plot SNR histograms
 plot_SNR_hist()
-plot_SNRsq_hist()
-
-
+significance = plot_SNRsq_hist()
+print('sig ~ ' + str(significance))
 

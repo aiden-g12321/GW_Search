@@ -1,5 +1,6 @@
 '''This script estimates the PSD from data and returns interpolated PSD function.
-It also defines a joint PSD for the two detectors.'''
+It also defines a joint PSD for the two detectors.
+'''
 
 
 import numpy as np
@@ -18,7 +19,7 @@ def get_psds(times, data_H1, data_L1, make_plots=False):
     NOVL = int( 1 * NFFT / 2 )  # number of points of overlap between segments used in Welch averaging
     psd_window = tukey(NFFT, alpha=1./4)
     
-    NFFTH = int(1 * fs)  # use 4 seconds of data for each FFT
+    NFFTH = int(4 * fs)  # use 4 seconds of data for each FFT
     NOVLH = int(1 * NFFTH / 2)  # number of points of overlap between segments used in Welch averaging
     psd_windowH = tukey(NFFTH, alpha=1./4)
 
@@ -37,15 +38,22 @@ def get_psds(times, data_H1, data_L1, make_plots=False):
     
     # plot PSDs
     if make_plots:
+        plt.subplot(1, 2, 1)
         plt.loglog(freqsH, Pxx_H1, label='Hanford PSD estimate')
-        plt.loglog(freqsL, Pxx_L1, label='Livingston PSD estimate')
         freqs_interpH = np.linspace(fminH, fmaxH, 1000)
-        freqs_interpL = np.linspace(fminL, fmaxL, 1000)
         plt.loglog(freqs_interpH, psd_H1(freqs_interpH), label='Hanford interpolation')
-        plt.loglog(freqs_interpL, psd_L1(freqs_interpL), label='Hanford interpolation')
         plt.xlabel('frequency (Hz)')
-        plt.ylabel('Sn(t)')
-        plt.legend(loc='upper right')
+        plt.ylabel('PSD')
+        plt.legend(loc='lower left')
+        plt.xlim(10, 3000)
+        plt.subplot(1, 2, 2)
+        plt.loglog(freqsL, Pxx_L1, label='Livingston PSD estimate')
+        freqs_interpL = np.linspace(fminL, fmaxL, 1000)
+        plt.loglog(freqs_interpL, psd_L1(freqs_interpL), label='Livingston interpolation')
+        plt.xlabel('frequency (Hz)')
+        plt.ylabel('PSD')
+        plt.legend(loc='lower left')
+        plt.xlim(10, 3000)
         plt.show()
 
     return [psd_H1, psd_L1]
@@ -70,11 +78,9 @@ def joint_psd(freqs):
 
 
 
-# H_psd, L_psd = individual_psds()
-# fs = np.linspace(0.1, 2048., 2**12+1)
-# plt.loglog(fs, H_psd(fs), label='Hanford')
-# plt.loglog(fs, L_psd(fs), label='Livingston')
-# plt.legend(loc='upper right')
-# plt.show()
 
+# times_psd = np.loadtxt('data/times_psd.dat')
+# H1_data_psd = np.loadtxt('data/H1_psd.dat')
+# L1_data_psd = np.loadtxt('data/L1_psd.dat')
+# get_psds(times_psd, H1_data_psd, L1_data_psd, make_plots=True)
 

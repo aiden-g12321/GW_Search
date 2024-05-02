@@ -1,4 +1,5 @@
-'''This script fetches open LIGO data and stores as .dat in data folder.'''
+'''This script fetches open LIGO data and stores as .dat in data folder.
+'''
 
 
 import numpy as np
@@ -45,16 +46,8 @@ def get_segment_times(event_start_time):
 
 
 
-# # save data for psd estimation
-# save_data(GPS_start_time-60., GPS_start_time, 'psd')
-
-# # save data in number of segments
+# # save data in multiple overlapping segments
 # start_times, stop_times = get_segment_times(GPS_start_time)
 # for j in range(num_segments):
 #     save_data(start_times[j], stop_times[j], str(j))
-
-# # save full two minutes of data in one file
-# save_data(GPS_start_time, GPS_start_time + 120., 'total', make_plots=True)
-
-# save_data(GPS_event_time - 2., GPS_event_time + 2., 'event', make_plots=True)      
 

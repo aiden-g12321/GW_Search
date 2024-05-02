@@ -1,5 +1,6 @@
 '''Script courtesy of Neil Cornish.
-Source: https://github.com/eXtremeGravityInstitute/LISA_Sensitivity/blob/master/PhenomA.py'''
+Source: https://github.com/eXtremeGravityInstitute/LISA_Sensitivity/blob/master/PhenomA.py
+'''
 
 
 import numpy as np
