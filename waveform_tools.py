@@ -6,8 +6,6 @@ template metric, and mis-match.
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import romb as integrate
-from scipy.signal import tukey, butter, filtfilt
-
 from PhenomA import *
 from constants import *
 from get_psd import *

@@ -5,7 +5,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import tukey, butter, filtfilt
+from scipy.signal import butter, filtfilt
+from scipy.signal.windows import tukey
 from constants import *
 from get_psd import *
 

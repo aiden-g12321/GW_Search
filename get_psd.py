@@ -6,7 +6,7 @@ It also defines a joint PSD for the two detectors.
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
-from scipy.signal import tukey
+from scipy.signal.windows import tukey
 from scipy.interpolate import interp1d
 
 
